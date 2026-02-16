@@ -1,41 +1,44 @@
 #ifndef ANALYZERS_H
 #define ANALYZERS_H
 
+#include <memory>
+#include <iostream>
+#include <fstream>
 #include <string>
-#include <unordered_map>
+#include <vector>
 
-struct Report {
+std::unique_ptr<Analyzer> get_analyzer_type(const std::string& file_name);
+std::string get_extension(const std::string& file_name);
+
+struct Node {
     std::string name;
-    std::unordered_map<std::string, int> stats;
-    std::unordered_map<std::string, std::vector<std::string>> keys;
-    std::unordered_map<std::string, std::vector<std::string>> connections;
+    std::vector<std::string> connections;
+    std::vector<std::string> dependecies;
+    std::vector<std::string> complexities;
 };
 
 class Analyzer {
     public:
         Analyzer() = default;
 
-        void virtual compute_complexity_helper() = 0;
-        void virtual get_next_node_helper() = 0;
-        void virtual set_nodes_helper() = 0;
-
-        void compute_complexity();
-        void get_next_node();
-        void load_code(std::string file_name);
-        std::string save_report_helper(const std::unordered_map<std::string, std::vector<std::string>>& map);
+        Node get_node();
+        void load_code();
         void save_report();
-        void set_nodes();
+        std::string save_report_helper(const std::vector<std::string> vec);
 
-        Report report;
+        void virtual analyze_code();
+        void virtual compute_complexity();
+
+        Node node;
         std::vector<std::string> code;
 };
 
 class Python_Analyzer : public Analyzer {
     public:
         Python_Analyzer(std::string name);
-        void compute_complexity_helper() override;
-        void get_next_node_helper() override;
-        void set_nodes_helper() override;
+
+        void analyze_code() override;
+        void compute_complexity() override;
 };
 
 #endif

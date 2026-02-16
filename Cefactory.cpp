@@ -21,13 +21,16 @@
 #include <string>
 
 #include "common.h"
-#include "analyzers.h"
+#include "graph.h"
 
 int main() {
-    std::string project_name = "test";
-    Python_Analyzer python_analzyer(project_name);
-    python_analzyer.set_nodes();
-    python_analzyer.save_report();
+    std::string name = "test";
+    std::string path = "../Refactory/";
+    std::string file = "analyzers.py";
+
+    Graph graph(name, path, file);
+    graph.populate_graph();
+    graph.save_report();
 
     return 0;
 }
