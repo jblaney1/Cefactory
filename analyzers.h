@@ -7,11 +7,10 @@
 #include <string>
 #include <vector>
 
-std::unique_ptr<Analyzer> get_analyzer_type(const std::string& file_name);
-std::string get_extension(const std::string& file_name);
-
 struct Node {
     std::string name;
+    std::vector<int> sl_comments;
+    std::vector<int> ml_comments;
     std::vector<std::string> connections;
     std::vector<std::string> dependecies;
     std::vector<std::string> complexities;
@@ -19,18 +18,24 @@ struct Node {
 
 class Analyzer {
     public:
+        Node node;
+        std::vector<std::string> code;
+
         Analyzer() = default;
 
         Node get_node();
+        std::vector<std::string> get_connections();
+        std::vector<std::string> get_dependencies();
+        std::vector<std::string> get_complexities();
+
         void load_code();
         void save_report();
         std::string save_report_helper(const std::vector<std::string> vec);
 
-        void virtual analyze_code();
-        void virtual compute_complexity();
+        virtual void analyze_code() = 0;
+        virtual void compute_complexity() = 0;
 
-        Node node;
-        std::vector<std::string> code;
+        virtual ~Analyzer() = default;
 };
 
 class Python_Analyzer : public Analyzer {
@@ -39,6 +44,20 @@ class Python_Analyzer : public Analyzer {
 
         void analyze_code() override;
         void compute_complexity() override;
+
+        ~Python_Analyzer() = default;
 };
+
+class HTML_Analyzer : public Analyzer {
+    public:
+        HTML_Analyzer(std::string name);
+
+        void analyze_code() override;
+        void compute_complexity() override;
+
+        ~HTML_Analyzer() = default;
+};
+
+std::unique_ptr<Analyzer> get_analyzer_type(const std::string file_name);
 
 #endif

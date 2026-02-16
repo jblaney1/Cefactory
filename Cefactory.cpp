@@ -20,7 +20,6 @@
 
 #include <string>
 
-#include "common.h"
 #include "graph.h"
 
 int main() {
@@ -30,7 +29,7 @@ int main() {
 
     Graph graph(name, path, file);
     graph.populate_graph();
-    graph.save_report();
+    //graph.save_report();
 
     return 0;
 }

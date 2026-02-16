@@ -18,26 +18,16 @@
  *
 */
 
-#include "common.h"
 #include "graph.h"
 
-bool find_element(const std::vector<std::string>& vec, const std::string& element){
-    bool found = false;
-
-    for (auto& entry : vec){
-        if (entry == element) {
-            found = true;
-            break;
-        }
-    }
-
-    return found;
+bool find_element(const std::vector<std::string>& vec, const std::string element){
+    return std::find(vec.begin(), vec.end(), element) != vec.end();
 }
 
 Graph::Graph(std::string graph_name, std::string path, std::string file) : name(graph_name), base_path(path), base_file(file){}
 
 void Graph::populate_graph(){
-    this->nodes.push_back(this->populate_graph_recursive(this->base_path + this->base_file)); 
+    this->nodes.push_back(this->populate_graph_recursive(this->base_path + this->base_file));
 }
 
 /*
@@ -60,19 +50,22 @@ void Graph::populate_graph(){
  * outputs:
  *  - Node: 
 */
-Node Graph::populate_graph_recursive(std::string node_name){
-    std::unique_ptr<Analyzer> analyzer = get_analyzer_type(node_name);
+Node Graph::populate_graph_recursive(const std::string node_name){
+    auto analyzer = get_analyzer_type(node_name);
     analyzer->load_code();
     analyzer->analyze_code();
 
-    for (auto& dependency : analyzer->get_node().dependecies){
-        if (~find_element(this->node_names, dependency)){
-            this->node_names.push_back(dependency);
-            this->nodes.push_back(this->populate_graph_recursive(dependency));
-        }
-    }
+    //for (auto& dependency : analyzer->get_dependencies()){
+    //   if (~find_element(this->node_names, dependency)){
+    //        this->node_names.push_back(dependency);
+    //        this->nodes.push_back(this->populate_graph_recursive(dependency));
+    //    }
+    //}
 
     analyzer->compute_complexity();
+    for (auto& entry : analyzer->get_node().sl_comments){
+        std::cout << entry << std::endl;
+    }
 
     return analyzer->get_node();
 }
@@ -93,6 +86,6 @@ void Graph::save_report(){
         }
     }
     catch (const std::exception& error){
-        log_error("load_code", error.what());
+        std::string message = "";
     }
 }

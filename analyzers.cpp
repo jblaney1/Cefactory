@@ -18,29 +18,18 @@
  * 
 */
 
-#include "common.h"
 #include "analyzers.h"
 
-std::unique_ptr<Analyzer> get_analyzer_type(const std::string& file_name){
-    std::string file_extension = get_extension(file_name);
-
-    if (file_extension == "py"){
-        return std::make_unique<Python_Analyzer>(file_name);
-    }
-    else{
-        return nullptr;
-    }
+std::vector<std::string> Analyzer::get_complexities(){
+    return this->node.complexities;
 }
 
-std::string get_extension(const std::string& file_name){
-    std::string extension = "";
+std::vector<std::string> Analyzer::get_connections(){
+    return this->node.connections;
+}
 
-    for (int i = file_name.size() - 1; i > 0; i--){
-        if (file_name[i] == '.') { break; }
-        else{ extension = file_name[i] + extension; }
-    }
-
-    return extension;
+std::vector<std::string> Analyzer::get_dependencies(){
+    return this->node.dependecies;
 }
 
 Node Analyzer::get_node(){
@@ -57,7 +46,7 @@ void Analyzer::load_code(){
         file.close();
     }
     catch (const std::exception& error){
-        log_error("load_code", error.what());
+        std::cout << "An error occurred";
     }
 }
 
@@ -77,7 +66,7 @@ void Analyzer::save_report(){
         }
     }
     catch (const std::exception& error){
-        log_error("load_code", error.what());
+        std::cout << "An error occurred";
     }
 }
 
@@ -99,15 +88,68 @@ std::string Analyzer::save_report_helper(const std::vector<std::string> vec){
 Python_Analyzer::Python_Analyzer(std::string name) { this->node.name = name; }
 
 void Python_Analyzer::analyze_code(){
-    for (int j = 10; j < 100; j++) {
-        this->node.dependecies.push_back(std::to_string(j));
-    }
+    size_t pos;
+    int index = 1;
+    bool in_comment = false;
+    for (std::string_view line : this->code){
+        if (line.find_first_of("\"\"\"") != std::string::npos) {
+            in_comment != in_comment;
+            this->node.ml_comments.push_back(index);
+        }
 
-    for (int j = 10; j < 200; j++) {
-        this->node.connections.push_back(std::to_string(j));
+        if (~in_comment){
+            if (line.find_first_of('#') != std::string::npos) {
+                this->node.sl_comments.push_back(index);
+            }
+            else{
+                pos = line.find_first_of("from");
+                if (pos != std::string::npos){
+
+                }
+                else{
+                    
+                }
+            }
+        }
+
+        index += 1;
     }
 }
 
 void Python_Analyzer::compute_complexity(){
 
+}
+
+
+/*
+
+*/
+
+HTML_Analyzer::HTML_Analyzer(std::string name) { this->node.name = name; }
+
+void HTML_Analyzer::analyze_code(){
+
+}
+
+void HTML_Analyzer::compute_complexity(){
+
+}
+
+std::string convert_extension(const std::string file_name){
+    auto pos = file_name.find_last_of('.');
+    return (pos != std::string::npos) ? file_name.substr(pos+1) : file_name;
+}
+
+std::unique_ptr<Analyzer> get_analyzer_type(const std::string file_name){
+    std::string file_extension = convert_extension(file_name);
+    
+    if (file_extension == "py"){
+        return std::make_unique<Python_Analyzer>(file_name);
+    }
+    else if (file_extension == "html"){
+        return std::make_unique<HTML_Analyzer>(file_name);
+    }
+    else{
+        throw std::invalid_argument("Unknown Analyzer Type: " + file_extension);
+    }
 }
