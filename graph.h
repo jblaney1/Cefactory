@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <fstream>
-#include <algorithm>
 
 #include "analyzers.h"
 
@@ -15,11 +14,12 @@ private:
     std::string base_path;
     std::vector<Node> nodes;
     std::vector<std::string> node_names;
+    std::vector<std::string> included_files;
 
     Node populate_graph_recursive(const std::string node_name);
     
 public:
-    Graph(std::string graph_name, std::string path, std::string file);
+    Graph(std::string graph_name, std::string path, std::string file, std::vector<std::string> file_list);
     void populate_graph();
     void save_report();
 };
