@@ -38,7 +38,9 @@ std::vector<std::string> get_included_files(std::string base_path){
 int main() {
     std::string name = "test";
     std::string path = "../Refactory/";
-    std::string file = "analyzers.py";
+    std::string file = "graph.py";
+    //std::string path = "../An-Evaluation-of-Deep-Learning-Models-for-Classifying-Individual-Data-Instances-in-Time-Series/";
+    //std::string file = "ann_tester.py";
     std::vector<std::string> file_list;
 
     file_list = get_included_files(path);

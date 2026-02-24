@@ -49,10 +49,10 @@ void Graph::populate_graph(){
 Node Graph::populate_graph_recursive(const std::string node_name){
     auto analyzer = get_analyzer_type(node_name);
     analyzer->load_code();
-    analyzer->analyze_code(this->included_files);
+    analyzer->analyze_code(this->base_path, this->included_files);
 
     for (auto& dependency : analyzer->get_dependencies()){
-       if (~find_element(this->node_names, dependency)){
+       if (!find_element(this->node_names, dependency)){
             this->node_names.push_back(dependency);
             this->nodes.push_back(this->populate_graph_recursive(dependency));
         }
